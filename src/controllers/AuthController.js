@@ -36,7 +36,7 @@ export const register = async (req,res,next) => {
   }
 }
 
-export const login = async (res,req,next) => {
+export const login = async (req,res,next) => {
   try {
     const { body } = req;
     
@@ -45,6 +45,8 @@ export const login = async (res,req,next) => {
         rut: body.rut,
       },
     });
+
+    console.log(user)
     
     if(user) {
       if(createHash(body.password) === user.password) {
