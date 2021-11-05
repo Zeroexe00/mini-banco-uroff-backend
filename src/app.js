@@ -5,11 +5,16 @@ import express from 'express';
 // import cookieParser from 'cookie-parser';
 // import { notFound, errorHandler } from './errorMiddlewares';
 import routes from './routes';
+const cors = require('cors')
 
 const app = express();
 // app.use(morgan('dev'));
+const corsOptions = {
+  origin: 'http://localhost:8080',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
 
-// app.use(helmet());
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

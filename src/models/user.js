@@ -20,10 +20,6 @@ export default class User extends Sequelize.Model {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0
-      },
-      refreshToken: {
-        type: DataTypes.TEXT,
-        allowNull: true
       }
     }, {
       tableName: 'users',
@@ -33,8 +29,7 @@ export default class User extends Sequelize.Model {
           exclude: ['password']
         }
       },
-      sequelize,
-      paranoid: true
+      sequelize
     });
   }
 

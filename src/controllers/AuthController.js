@@ -1,6 +1,6 @@
 import models from '../models';
 import { signToken } from '../utilities/tokenization'
-
+import createHash from '../utilities/hash'
 const { User } = models;
 
 export const register = async (req,res,next) => {
@@ -14,7 +14,7 @@ export const register = async (req,res,next) => {
     });
 
     if(isUserExist) {
-      res.status(400)
+      res.status(401)
       const error = new Error('Error el usuario ya existe');
       next(error);
       return;
@@ -32,7 +32,7 @@ export const register = async (req,res,next) => {
     })
 
   } catch (er) {
-    next(error)
+    next(er)
   }
 }
 

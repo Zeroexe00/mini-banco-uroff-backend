@@ -21,5 +21,8 @@ module.exports = {
     database: "database_production",
     host: "127.0.0.1",
     dialect: "mysql"
+  },
+  keys: {
+    SECRET_KEY: process.env.SECRET_KEY || 'dPddPd',
   }
 }
