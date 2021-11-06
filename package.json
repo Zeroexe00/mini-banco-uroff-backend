@@ -6,10 +6,9 @@
   "scripts": {
     "dev": "nodemon --exec babel-node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "seed": "sequelize db:seed:all",
     "migrate": "sequelize db:migrate",
     "migrate-refresh": "sequelize db:migrate:undo:all && npm run migrate",
-    "migrate-all": "npm run migrate-refresh && npm run seed"
+    "migrate-all": "npm run migrate-refresh"
   },
   "keywords": [],
   "author": "",
