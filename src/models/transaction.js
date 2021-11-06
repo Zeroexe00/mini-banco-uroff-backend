@@ -3,12 +3,16 @@ import Sequelize from 'sequelize';
 export default class Transaction extends Sequelize.Model {
   static init(sequelize, DataTypes) {
     return super.init({
-      userIdReceiver: {
+      senderId: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      userIdSender: {
+      receiverId: {
         type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      type: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
       amount: {
@@ -19,6 +23,11 @@ export default class Transaction extends Sequelize.Model {
       tableName: 'transactions',
       modelName: 'transaction',
       sequelize
+    });
+  }
+  static associate(models) {
+    this.hasMany(models.User, {
+      foreignKey: 'id'
     });
   }
 }

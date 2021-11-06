@@ -6,13 +6,24 @@ module.exports = {
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    userIdSender: Sequelize.INTEGER,
-    userIdReceiver: Sequelize.INTEGER,
-    amount: Sequelize.INTEGER,
+    senderId: {
+      type: Sequelize.INTEGER,
+      allowNull: false
+    },
+    receiverId: {
+      type: Sequelize.INTEGER,
+      allowNull: false
+    },
+    amount: {
+      type: Sequelize.INTEGER,
+      allowNull: false
+    },
+    type: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
   }),
-  // eslint-disable-next-line
   down: (queryInterface, Sequelize) => queryInterface.dropTable('transactions', {
 
   })
-  // eslint-disable-next-line eol-last
 };

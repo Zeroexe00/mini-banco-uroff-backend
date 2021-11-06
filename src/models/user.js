@@ -29,6 +29,13 @@ export default class User extends Sequelize.Model {
   }
 
   static associate(models) {
-    //
+    this.belongsTo(models.Transaction, {
+      as: 'sender',
+      foreignKey: 'senderId'
+    })
+    this.belongsTo(models.Transaction, {
+      as: 'receiver',
+      foreignKey: 'receiverId'
+    })
   }
 }

@@ -1,5 +1,6 @@
 import models from '../models';
 import { signToken } from '../utilities/tokenization'
+import _ from 'lodash';
 import createHash from '../utilities/hash'
 const { User } = models;
 
@@ -45,13 +46,11 @@ export const login = async (req,res,next) => {
         rut: body.rut,
       },
     });
-
-    console.log(user)
     
     if(user) {
       if(createHash(body.password) === user.password) {
-        
-        const token = signToken({password: 'password', ...user});
+        const _user = _.omit(user.toJSON(),'password')
+        const token = signToken({..._user});
         
         return res.json({
           success: true,
