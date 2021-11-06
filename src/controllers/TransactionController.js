@@ -83,31 +83,36 @@ export const transfer = async (req,res,next) => {
         rut: [rutSender,rutReceiver]
       }
     })
+    const [sender,receiver] = users
     
-    const senderCurrentBalance = users[0].currentBalance 
-    const receiverCurrentBalance = users[1].currentBalance
+    const senderCurrentBalance = sender.currentBalance 
+    const receiverCurrentBalance = receiver.currentBalance
+
 
     if((senderCurrentBalance - amount) < 0) {
-      res.json({
+      return res.json({
         success: false,
         msg:'Error no posee suficientes fondos'
       })
     }
 
-    const usersUpdated = await users.update({
+    await sender.update({
       currentBalance: senderCurrentBalance - amount
-    },
-    {
+    })
+
+    await receiver.update({
       currentBalance: receiverCurrentBalance + amount
     })
     
+    sendEmail(amount,email,sender,receiver)
+    
     res.json({
       success: true,
-      senderUser: usersUpdated[0],
-      receiverUser: usersUpdated[1]
+      senderUser: sender,
+      receiverUser: receiver
     })
 
-    // sendEmail(amount)
+
     next()
 
   } catch (error) {

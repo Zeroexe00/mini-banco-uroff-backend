@@ -42,6 +42,7 @@ export const login = async (req,res,next) => {
     const { body } = req;
     
     const user = await User.findOne({
+      attributes: ['id', 'password'],
       where: {
         rut: body.rut,
       },
@@ -49,7 +50,8 @@ export const login = async (req,res,next) => {
     
     if(user) {
       if(createHash(body.password) === user.password) {
-        const _user = _.omit(user.toJSON(),'password')
+        const _user = await User.findByPk(user.id);
+        _user = _.omit(user.toJSON(),'password')
         const token = signToken({..._user});
         
         return res.json({
