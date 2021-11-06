@@ -26,7 +26,7 @@ export default class Transaction extends Sequelize.Model {
     });
   }
   static associate(models) {
-    this.hasMany(models.User, {
+    this.belongsTo(models.User, {
       foreignKey: 'id'
     });
   }

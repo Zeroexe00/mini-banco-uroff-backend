@@ -1,20 +1,22 @@
 
 import models from '../models';
-
-
+import { sendEmail } from '../utilities/emailSender'
 const {User, Transaction} = models
 
 export const deposit = async (req,res,next) => {
   try {
     const { rut, amount } = req.body
-    const user = User.findOne({
-      where: rut
+    const user = await User.findOne({
+      where: {
+        rut: rut
+      }
     })
+    const currentBalance = user.currentBalance
     const result = await Transaction.create({
       senderId: user.id,
       receiverId: user.id,
-      amount,
-      type: 'deposit'
+      type: 'deposit',
+      amount
     });
 
     const updateUser = await user.update({
@@ -22,7 +24,7 @@ export const deposit = async (req,res,next) => {
     })
 
     res.json({
-      success,
+      success: true,
       updateUser
     })
 
@@ -36,10 +38,14 @@ export const withdraw = async (req,res,next) => {
   try {
     const { rut, amount } = req.body
     const user = await User.findOne({
-      where: rut
+      where: {
+        rut: rut
+      }
     })
     
-    if((user.currentBalance - amount) < 0) {
+    const currentBalance = user.currentBalance
+
+    if((currentBalance - amount) < 0) {
       res.json({
         success: false,
         msg: 'Su cuenta no tiene dinero suficiente.'
@@ -47,14 +53,14 @@ export const withdraw = async (req,res,next) => {
     }
 
     const userUpdated = await user.update({
-      currentBalance: currentBalance - amount
+      currentBalance: amount - currentBalance 
     })
 
     await Transaction.create({
       senderId: user.id,
       receiverId: user.id,
-      amount,
-      tyoe: 'withdraw'
+      type: 'withdraw',
+      amount
     })
 
     res.json({
@@ -71,18 +77,67 @@ export const withdraw = async (req,res,next) => {
 
 export const transfer = async (req,res,next) => {
   try {
-    const { rutSender, rutReceiver, amount } = req.body
-    const users = User.findAll({
+    const { rutSender, rutReceiver, amount, email } = req.body
+    const users = await User.findAll({
       where: {
-        rut: {
-          in: [rutSender,rutReceiver]
-        }
+        rut: [rutSender,rutReceiver]
       }
     })
+    
+    const senderCurrentBalance = users[0].currentBalance 
+    const receiverCurrentBalance = users[1].currentBalance
 
-    console.log(users.toJSON())
+    if((senderCurrentBalance - amount) < 0) {
+      res.json({
+        success: false,
+        msg:'Error no posee suficientes fondos'
+      })
+    }
+
+    const usersUpdated = await users.update({
+      currentBalance: senderCurrentBalance - amount
+    },
+    {
+      currentBalance: receiverCurrentBalance + amount
+    })
+    
+    res.json({
+      success: true,
+      senderUser: usersUpdated[0],
+      receiverUser: usersUpdated[1]
+    })
+
+    // sendEmail(amount)
+    next()
 
   } catch (error) {
+    console.log(error)
+    next()
+  }
+}
+
+export const getTransactions = async (req, res, next) => {
+  try {
+    const { rut } = req.body
+    if(rut) {
+      const user = await User.findOne({
+        where: rut
+      })
+      const trans = Transaction.findAll({
+        where: {
+          $or: {
+            senderId: user.id,
+            receiverId: user.id
+          }
+        }
+      })
+      res.json({
+        success: true,
+        transactions: trans,
+      })
+    }
+  } catch (error) {
+    next()
     console.log(error)
   }
 }
